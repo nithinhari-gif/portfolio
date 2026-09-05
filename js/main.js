@@ -155,7 +155,7 @@
   });
 
   tl.to(".hero__about", { autoAlpha: 0, xPercent: 14, duration: 0.18, ease: "power1.in" }, 0.02)
-    .to(".hero__title", { autoAlpha: 0.1, scale: 0.9, duration: 0.32, ease: "power1.inOut" }, 0.04)
+    .to(".hero__title", { autoAlpha: 0, scale: 0.9, duration: 0.32, ease: "power1.inOut" }, 0.04)
     .to(".stage", {
       width: function () { return bigSize().w; },
       height: function () { return bigSize().h; },
