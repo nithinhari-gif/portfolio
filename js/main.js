@@ -181,4 +181,23 @@
   window.addEventListener("resize", function () {
     ScrollTrigger.refresh();
   });
+
+  /* ---------- nav "works" link: jump straight to the revealed work list,
+     not just the top of the hero (which is what #work would land on by
+     default, since the reveal is one tall scroll-hijacked section) ---------- */
+  var navWorks = document.querySelector('.nav__link[href="#work"]');
+  if (navWorks) {
+    navWorks.addEventListener("click", function (e) {
+      e.preventDefault();
+      var reveal = document.querySelector(".reveal");
+      var revealTop = reveal.getBoundingClientRect().top + window.scrollY;
+      var scrollRange = reveal.offsetHeight - window.innerHeight;
+      var target = revealTop + scrollRange * 0.68; // well past is-open/is-live thresholds (0.46/0.5), inside the hold
+      if (lenis && typeof lenis.scrollTo === "function") {
+        lenis.scrollTo(target, { duration: 1.2 });
+      } else {
+        window.scrollTo({ top: target, behavior: "smooth" });
+      }
+    });
+  }
 })();
