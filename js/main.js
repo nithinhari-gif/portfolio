@@ -182,22 +182,51 @@
     ScrollTrigger.refresh();
   });
 
-  /* ---------- nav "works" link: jump straight to the revealed work list,
-     not just the top of the hero (which is what #work would land on by
-     default, since the reveal is one tall scroll-hijacked section) ---------- */
+  /* ---------- jump straight to the revealed work list, not just the top of
+     the hero (which is what #work would land on by default, since the
+     reveal is one tall scroll-hijacked section) — used by the nav "works"
+     link (in-page click) and by any "#work" link arriving from another
+     page, e.g. a project page's "back to work" / the browser back button ---------- */
+  function workListTarget() {
+    var reveal = document.querySelector(".reveal");
+    var revealTop = reveal.getBoundingClientRect().top + window.scrollY;
+    var scrollRange = reveal.offsetHeight - window.innerHeight;
+    return revealTop + scrollRange * 0.68; // well past is-open/is-live thresholds (0.46/0.5), inside the hold
+  }
+
   var navWorks = document.querySelector('.nav__link[href="#work"]');
   if (navWorks) {
     navWorks.addEventListener("click", function (e) {
       e.preventDefault();
-      var reveal = document.querySelector(".reveal");
-      var revealTop = reveal.getBoundingClientRect().top + window.scrollY;
-      var scrollRange = reveal.offsetHeight - window.innerHeight;
-      var target = revealTop + scrollRange * 0.68; // well past is-open/is-live thresholds (0.46/0.5), inside the hold
+      var target = workListTarget();
       if (lenis && typeof lenis.scrollTo === "function") {
         lenis.scrollTo(target, { duration: 1.2 });
       } else {
         window.scrollTo({ top: target, behavior: "smooth" });
       }
     });
+  }
+
+  // arriving from elsewhere with #work already in the URL (project pages'
+  // "back to work" link, browser back/forward, a bookmarked link, etc.) —
+  // the browser does its own "scroll to the #work element" as part of
+  // finishing the navigation, and it does this *after* synchronous scripts
+  // run, so correcting it here immediately gets clobbered a moment later.
+  // Running the correction on `load` instead guarantees we go last.
+  if (location.hash === "#work") {
+    var correctWorkHashScroll = function () {
+      ScrollTrigger.refresh();
+      var loadTarget = workListTarget();
+      if (lenis && typeof lenis.scrollTo === "function") {
+        lenis.scrollTo(loadTarget, { immediate: true });
+      } else {
+        window.scrollTo({ top: loadTarget, behavior: "instant" });
+      }
+    };
+    if (document.readyState === "complete") {
+      correctWorkHashScroll();
+    } else {
+      window.addEventListener("load", correctWorkHashScroll);
+    }
   }
 })();
