@@ -1,0 +1,8 @@
+# Original, full-size video uploads — kept locally as the permanent archive,
+# never deployed (the site only ever references assets/videos/*.mp4 and
+# assets/videos/full/<id>/*.mp4, both web-optimised copies).
+assets/videos/masters/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

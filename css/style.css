@@ -1,0 +1,514 @@
+/* ============================================================
+   Nithin Hari — portfolio
+   Palette / type tokens
+   ============================================================ */
+:root {
+  --klein: #002FA7;          /* primary */
+  --klein-deep: #00227a;
+  --ink: #0a0a0a;
+  --paper: #ffffff;
+  --paper-2: #ffffff;
+  --muted: #8a8a8a;
+
+  --edge: clamp(18px, 4vw, 56px);
+  --edge-hero: clamp(20px, 7vw, 128px);
+  --font: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-weight: 500;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+img, video { display: block; max-width: 100%; }
+
+::selection { background: var(--klein); color: #fff; }
+
+/* Lenis smooth-scroll */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ============================================================
+   Nav
+   ============================================================ */
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: clamp(16px, 2.4vw, 28px) var(--edge);
+  mix-blend-mode: difference;      /* stays legible over the expanding video */
+  color: #fff;
+}
+.nav a { pointer-events: auto; }
+.nav__link,
+.nav__brand {
+  font-weight: 700;
+  font-size: clamp(17px, 2.3vw, 30px);
+  letter-spacing: -0.02em;
+}
+.nav__brand { position: absolute; left: 50%; transform: translateX(-50%); }
+.nav__link { transition: opacity .2s; }
+.nav__link:hover { opacity: .55; }
+
+/* ============================================================
+   Reveal section  (tall — pins its child while scrolling)
+   ============================================================ */
+.reveal { position: relative; height: 260vh; }
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- hero title (left) --- */
+/* sized to clear the centred stage rectangle at every viewport width —
+   see the width math in the README before raising this clamp */
+.hero__title {
+  position: absolute;
+  left: var(--edge-hero);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  font-weight: 700;
+  font-size: clamp(28px, 4.2vw, 72px);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  will-change: transform, opacity;
+}
+.hero__line { display: block; position: relative; z-index: 2; }
+
+/* --- about block (right): doodle + description --- */
+.hero__about {
+  position: absolute;
+  right: var(--edge-hero);
+  top: 50%;
+  transform: translateY(-46%);
+  z-index: 6;
+  max-width: 32ch;
+  will-change: transform, opacity;
+}
+.doodle {
+  width: clamp(52px, 5vw, 74px);
+  height: auto;
+  display: block;
+  margin: 0 0 clamp(14px, 2vw, 26px) 2px;
+}
+.hero__desc {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(16px, 1.55vw, 22px);
+  line-height: 1.4;
+  text-align: left;
+}
+.hero__desc strong { font-weight: 600; }
+
+/* --- the stage / work viewer (center) --- */
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(210px, 17vw, 262px);
+  height: clamp(320px, 25vw, 384px);
+  transform: translate(-50%, -50%);
+  border-radius: 34px;
+  overflow: hidden;
+  z-index: 5;
+  background: #111;
+  box-shadow: 0 30px 80px -30px rgba(0,0,0,.35);
+  will-change: width, height, border-radius;
+}
+.stage__media { position: absolute; inset: 0; }
+
+/* --- bad-tv / VHS glitch overlay --- */
+.stage__scan {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: .5;
+  mix-blend-mode: overlay;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.06) 0px,
+      rgba(255,255,255,.06) 1px,
+      rgba(0,0,0,.10) 2px,
+      rgba(0,0,0,.10) 3px
+    );
+}
+.stage__scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.12) 34%, transparent 55%),
+    radial-gradient(130% 100% at 50% 50%, transparent 52%, rgba(0,0,0,.6) 100%);
+  mix-blend-mode: multiply;
+  transition: opacity .4s;
+  opacity: 0;
+}
+.stage.is-open .stage__scan { opacity: .85; mix-blend-mode: normal; }
+.stage.is-open .stage__scan::after { opacity: 1; }
+/* chromatic-aberration pulse on the live video */
+.slot.is-active video { animation: rgbShift 6s steps(1) infinite; }
+@keyframes rgbShift {
+  0%, 92%, 100% { filter: none; }
+  93%  { filter: drop-shadow(2px 0 0 rgba(255,0,80,.6)) drop-shadow(-2px 0 0 rgba(0,180,255,.6)); transform: translateX(1px); }
+  95%  { filter: drop-shadow(-3px 0 0 rgba(255,0,80,.5)) drop-shadow(3px 0 0 rgba(0,180,255,.5)); transform: translateX(-2px); }
+  97%  { filter: none; transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slot.is-active video { animation: none; }
+}
+.slot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.slot.is-active { opacity: 1; }
+
+.slot video,
+.slot .placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slot .placeholder {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: #fff;
+  letter-spacing: .03em;
+  background:
+    radial-gradient(120% 90% at 18% 8%, #0a44e0 0%, transparent 58%),
+    radial-gradient(120% 120% at 92% 100%, #001a5e 0%, transparent 55%),
+    var(--klein);
+}
+.slot.missing .placeholder { display: flex; }
+.slot.missing video { display: none; }
+.slot .placeholder b { font-weight: 700; font-size: clamp(15px, 1.6vw, 22px); }
+.slot .placeholder span { opacity: .7; font-weight: 500; font-size: clamp(11px, 1.1vw, 13px); text-transform: lowercase; }
+
+/* "view project" pill that follows the cursor while hovering a work title —
+   positioned via inline transform (translate) set from JS on mousemove */
+.cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  transform: translate(-1000px, -1000px);
+  padding: 11px 20px;
+  border-radius: 999px;
+  background: var(--klein);
+  color: #fff;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .02em;
+  text-transform: lowercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+  box-shadow: 0 10px 26px -10px rgba(0,0,0,.45);
+  will-change: transform;
+}
+.cursor-label.show { opacity: 1; }
+@media (max-width: 820px), (hover: none) {
+  .cursor-label { display: none; } /* no cursor to follow on touch */
+}
+
+/* --- work list --- */
+.works {
+  position: absolute;
+  left: var(--edge);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0px, 0.2vw, 4px);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+  max-height: 88vh;
+  justify-content: center;
+}
+.works.is-live { pointer-events: auto; }
+
+.works__item {
+  appearance: none;
+  background: none;
+  border: 0;
+  font-family: var(--font);
+  font-weight: 700;
+  text-transform: lowercase;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  font-size: clamp(28px, 5.6vw, 84px);
+  color: transparent;
+  -webkit-text-stroke: 1.6px #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: color .18s, -webkit-text-stroke-color .18s, opacity .18s;
+  mix-blend-mode: difference;
+}
+.works__item:hover,
+.works__item.is-active {
+  color: #fff;
+  -webkit-text-stroke-color: #fff;
+  mix-blend-mode: normal;
+}
+.works.has-hover .works__item:not(:hover) { opacity: .5; }
+
+/* ============================================================
+   Contact
+   ============================================================ */
+.contact {
+  position: relative;
+  z-index: 2;
+  background: var(--ink);
+  color: var(--paper-2);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(14px, 2vw, 26px);
+  padding: 12vh var(--edge);
+}
+.contact__kicker {
+  font-weight: 500;
+  text-transform: lowercase;
+  color: #8a8a8a;
+  font-size: clamp(14px, 1.4vw, 18px);
+}
+.contact__mail {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: clamp(30px, 7vw, 96px);
+  line-height: 1;
+  word-break: break-word;
+}
+.contact__mail:hover { color: var(--klein); -webkit-text-stroke: 1px #fff; }
+.contact__socials {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 44px);
+  margin-top: clamp(20px, 4vw, 48px);
+}
+.contact__socials a {
+  font-weight: 700;
+  text-transform: lowercase;
+  font-size: clamp(16px, 1.8vw, 22px);
+  border-bottom: 2px solid transparent;
+  padding-bottom: 3px;
+  transition: border-color .2s, color .2s;
+}
+.contact__socials a:hover { color: var(--klein); border-color: var(--klein); }
+.contact__foot {
+  margin-top: auto;
+  padding-top: 8vh;
+  color: #6f6f6f;
+  font-size: 13px;
+  text-transform: lowercase;
+}
+
+/* ============================================================
+   Scroll hint
+   ============================================================ */
+.scroll-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: lowercase;
+  color: #9a9a9a;
+  transition: opacity .4s;
+}
+.scroll-hint svg { width: 15px; height: 15px; opacity: .7; }
+.scroll-hint.hide { opacity: 0; }
+
+/* ============================================================
+   Mobile / no-JS  — flat stacked layout
+   ============================================================ */
+@media (max-width: 820px) {
+  .reveal { height: auto; }
+  .pin { position: static; height: auto; overflow: visible; padding: 116px var(--edge) 64px; }
+
+  .hero__title { position: static; transform: none; margin-bottom: 30px; }
+
+  .hero__about {
+    position: static; transform: none;
+    max-width: none; margin-bottom: 40px;
+  }
+
+  .stage {
+    position: static; transform: none;
+    width: 100%; height: 62vw; min-height: 260px;
+    border-radius: 22px; margin-bottom: 40px;
+  }
+
+  .works {
+    position: static; transform: none;
+    opacity: 1 !important; pointer-events: auto;
+    gap: 6px;
+  }
+  .works__item { mix-blend-mode: normal; color: var(--ink); -webkit-text-stroke: 0; }
+  .works__item.is-active, .works__item:hover { color: var(--klein); }
+  .works.has-hover .works__item:not(:hover) { opacity: 1; }
+
+  .nav { mix-blend-mode: normal; color: var(--ink); }
+  .contact { min-height: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+
+/* ============================================================
+   Project page (project.html) — one scrollable page per project,
+   never tabs/buttons: everything just lays out top to bottom.
+   ============================================================ */
+.project {
+  min-height: 100vh;
+  padding: clamp(90px, 14vh, 160px) var(--edge) clamp(80px, 10vh, 140px);
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.project__back {
+  display: inline-block;
+  font-weight: 700;
+  font-size: clamp(13px, 1.2vw, 16px);
+  text-transform: lowercase;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  margin-bottom: clamp(20px, 3vw, 36px);
+  transition: color .2s;
+}
+.project__back:hover { color: var(--klein); }
+
+.project__title {
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 64px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-align: center;
+}
+.project__category {
+  margin-top: 8px;
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.4vw, 20px);
+  color: var(--muted);
+  text-transform: lowercase;
+  text-align: center;
+}
+.project__intro {
+  margin: clamp(18px, 2.6vw, 28px) auto 0;
+  max-width: 62ch;
+  font-family: var(--serif);
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.project__list {
+  margin-top: clamp(40px, 6vw, 72px);
+}
+
+/* video element shared by both layouts */
+.project__section video,
+.project__clip video {
+  display: block;
+  width: 100%;
+  border-radius: 16px;
+  background: #000;
+  box-shadow: 0 24px 60px -28px rgba(0,0,0,.35);
+}
+
+/* --- "stacked": clips one by one, full width, in one column — everything centered --- */
+.project__list[data-layout="stacked"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(56px, 8vw, 96px);
+}
+.project__section {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;    /* auto cross-axis margins center this flex item regardless of align-items */
+  text-align: center;
+}
+.project__clip-title {
+  font-weight: 700;
+  font-size: clamp(22px, 2.6vw, 34px);
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+.project__clip-desc {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.3vw, 18px);
+  line-height: 1.55;
+  color: #333;
+  max-width: 60ch;
+  margin: 0 auto clamp(20px, 2.6vw, 30px);
+}
+
+/* --- "grid": clips side by side, small optional caption, no big copy ---
+   narrower columns for 9:16 reels, wider for 16:9 landscape work */
+.project__list[data-layout="grid"] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: clamp(20px, 2.4vw, 32px);
+}
+.project__list[data-layout="grid"][data-aspect="landscape"] {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+.project__clip-label {
+  margin-top: 10px;
+  font-family: var(--serif);
+  font-size: clamp(13px, 1vw, 15px);
+  color: var(--muted);
+  text-align: center;
+}
+
+/* JS disabled — make sure everything is visible */
+.no-js .pin { position: static; height: auto; overflow: visible; padding: 120px var(--edge) 60px; }
+.no-js .hero__title,
+.no-js .hero__about,
+.no-js .stage,
+.no-js .works { position: static; transform: none; opacity: 1; pointer-events: auto; }
+.no-js .stage { width: 100%; height: 56vw; margin: 30px 0; }
+.no-js .scroll-hint { display: none; }
